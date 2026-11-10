@@ -1,0 +1,46 @@
+package com.vitor.aprendendospring.handler;
+
+
+import com.vitor.aprendendospring.exeption.TarefaNaoEncontradaException;
+import com.vitor.aprendendospring.response.ErroResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErroResponse> tratarValidacao(
+            MethodArgumentNotValidException ex) {
+
+        String mensagem = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(erro -> erro.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        ErroResponse resposta = new ErroResponse(
+                400,
+                mensagem
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(resposta);
+    }
+
+    @ExceptionHandler(TarefaNaoEncontradaException.class)
+    public ResponseEntity<ErroResponse> tratarTarefaNaoEncontrada(TarefaNaoEncontradaException ex){
+
+        ErroResponse resposta = new ErroResponse(404,ex.getMessage());
+
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resposta);
+    }
+
+}
