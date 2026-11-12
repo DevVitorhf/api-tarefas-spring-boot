@@ -88,4 +88,18 @@ public class TarefaService {
 
         tarefaRepository.delete(tarefa);
     }
+
+    public List<TarefaResponse> buscarPorPrioridade(String prioridade) {
+
+        List<Tarefa> tarefas = tarefaRepository.findByPrioridade(prioridade);
+
+        return tarefas.stream()
+                .map(tarefa -> new TarefaResponse(
+                        tarefa.getId(),
+                        tarefa.getTitulo(),
+                        tarefa.getPrioridade(),
+                        tarefa.isConcluida()))
+                .toList();
+
+    }
 }

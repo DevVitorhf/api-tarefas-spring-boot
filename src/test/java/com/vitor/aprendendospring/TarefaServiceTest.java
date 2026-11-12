@@ -1,5 +1,7 @@
 package com.vitor.aprendendospring;
 
+
+import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
 import com.vitor.aprendendospring.exeption.TarefaNaoEncontradaException;
 import com.vitor.aprendendospring.model.Tarefa;
@@ -13,7 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
+import java.util.List;
 import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -55,7 +60,7 @@ class TarefaServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoQuandoTituloExistir(){
+    void deveLancarExcecaoQuandoTituloExistir() {
 
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo("Estudar java");
@@ -66,11 +71,11 @@ class TarefaServiceTest {
             tarefaService.cadastrar(tarefa);
         });
 
-        verify(tarefaRepository,never()).save(any(Tarefa.class));
+        verify(tarefaRepository, never()).save(any(Tarefa.class));
     }
 
     @Test
-    void deveCadastrarTarefaQuandoTituloNaoExistir(){
+    void deveCadastrarTarefaQuandoTituloNaoExistir() {
 
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo("Estudar Spring Boot");
@@ -98,15 +103,39 @@ class TarefaServiceTest {
         tarefaSalva.setTitulo("Estudar JUnit");
 
 
-            when(tarefaRepository.existsByTitulo(tarefa.getTitulo())).thenReturn(false);
+        when(tarefaRepository.existsByTitulo(tarefa.getTitulo())).thenReturn(false);
 
-            when(tarefaRepository.save(tarefa)).thenReturn(tarefaSalva);
+        when(tarefaRepository.save(tarefa)).thenReturn(tarefaSalva);
 
-            Tarefa resultado = tarefaService.cadastrar(tarefa);
+        Tarefa resultado = tarefaService.cadastrar(tarefa);
 
-            assertEquals(10l, resultado.getId());
+        assertEquals(10l, resultado.getId());
 
-            verify(tarefaRepository).save(tarefa);
+        verify(tarefaRepository).save(tarefa);
     }
+
+    @Test
+    void deveBuscarTarefasPorPrioridade() {
+
+        Tarefa tarefa = new Tarefa();
+
+        tarefa.setId(1L);
+        tarefa.setTitulo("Estudar Java");
+        tarefa.setPrioridade("ALTA");
+        tarefa.setConcluida(false);
+
+        when(tarefaRepository.findByPrioridade("ALTA")).thenReturn(List.of(tarefa));
+
+        List<TarefaResponse> resultado = tarefaService.buscarPorPrioridade("ALTA");
+
+        assertEquals(1, resultado.size());
+        assertEquals("Estudar Java", resultado.get(0).titulo());
+        assertEquals("ALTA", resultado.get(0).prioridade());
+
+        verify(tarefaRepository).findByPrioridade("ALTA");
+
+
+    }
+
 }
 

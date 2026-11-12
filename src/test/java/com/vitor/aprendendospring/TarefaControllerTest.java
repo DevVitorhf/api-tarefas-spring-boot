@@ -1,7 +1,7 @@
 
 package com.vitor.aprendendospring;
 
-import com.jayway.jsonpath.JsonPath;
+
 import com.vitor.aprendendospring.controller.TarefaController;
 import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
@@ -20,6 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
+
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -72,57 +75,78 @@ class TarefaControllerTest {
     }
 
     @Test
-    void deveExcluirTarefaComSucesso() throws Exception{
+    void deveExcluirTarefaComSucesso() throws Exception {
 
 
         Long id = 5l;
 
-       mockMvc.perform(delete("/tarefas/{id}", id))
-               .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/tarefas/{id}", id))
+                .andExpect(status().isNoContent());
 
-       verify(tarefaService,times(1)).excluir(id);
-
+        verify(tarefaService, times(1)).excluir(id);
 
 
     }
+
     @Test
     void deveRetornar400QuandoTituloEstiverVazio()
             throws Exception {
 
         String json = """
-        {
-            "titulo": "",
-            "prioridade": "ALTA"
-        }
-        """;
+                {
+                    "titulo": "",
+                    "prioridade": "ALTA"
+                }
+                """;
 
         mockMvc.perform(post("/tarefas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(tarefaService);
     }
+
     @Test
     void deveRetornar409QuandoTituloJaExistir()
             throws Exception {
 
         String json = """
-        {
-            "titulo": "Estudar Java",
-            "prioridade": "ALTA"
-        }
-        """;
+                {
+                    "titulo": "Estudar Java",
+                    "prioridade": "ALTA"
+                }
+                """;
 
 
         when(tarefaService.cadastrar(any(Tarefa.class))).thenThrow(new TarefaDuplicadaException("Já existe uma tarefa com esse titulo"));
 
         mockMvc.perform(post("/tarefas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isConflict());
 
         verify(tarefaService).cadastrar(any(Tarefa.class));
+
+    }
+
+    @Test
+    void deveBuscarTarefasPorPrioridade() throws Exception {
+
+        TarefaResponse tarefaResponse = new TarefaResponse(1L,
+                "Estudar Java",
+                "ALTA",
+                false
+        );
+
+        when(tarefaService.buscarPorPrioridade("ALTA"))
+                .thenReturn(List.of(tarefaResponse));
+
+        mockMvc.perform(get("/tarefas/prioridade/ALTA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo")
+                        .value("Estudar Java"))
+                .andExpect(jsonPath("$[0].prioridade").value("ALTA"));
 
     }
 

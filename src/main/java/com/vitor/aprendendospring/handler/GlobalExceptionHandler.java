@@ -1,6 +1,7 @@
 package com.vitor.aprendendospring.handler;
 
 
+import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
 import com.vitor.aprendendospring.exeption.TarefaNaoEncontradaException;
 import com.vitor.aprendendospring.response.ErroResponse;
 import org.springframework.http.HttpStatus;
@@ -35,12 +36,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TarefaNaoEncontradaException.class)
-    public ResponseEntity<ErroResponse> tratarTarefaNaoEncontrada(TarefaNaoEncontradaException ex){
+    public ResponseEntity<ErroResponse> tratarTarefaNaoEncontrada(TarefaNaoEncontradaException ex) {
 
-        ErroResponse resposta = new ErroResponse(404,ex.getMessage());
+        ErroResponse resposta = new ErroResponse(404, ex.getMessage());
 
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resposta);
+    }
+
+    @ExceptionHandler(TarefaDuplicadaException.class)
+    public ResponseEntity<ErroResponse> tratarTarefaDuplicada(
+            TarefaDuplicadaException ex) {
+
+        ErroResponse resposta = new ErroResponse(
+                409,
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(resposta);
     }
 
 }
