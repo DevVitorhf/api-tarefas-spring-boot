@@ -5,4 +5,5 @@ public record TarefaResponse(
         String titulo,
         String prioridade,
         boolean concluida
-) {}
+) {
+}

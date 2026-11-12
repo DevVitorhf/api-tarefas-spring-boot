@@ -13,15 +13,15 @@ import lombok.*;
 @Table(name = "tarefas")
 public class Tarefa {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        private String titulo;
+    private String titulo;
 
-        private boolean concluida;
+    private boolean concluida;
 
-        private String prioridade;
+    private String prioridade;
 
-    }
+}
 
