@@ -150,5 +150,44 @@ class TarefaControllerTest {
 
     }
 
+    @Test
+    void deveRetornar400QuandoTituloForMuitoCurto() throws Exception {
+
+        String json = """
+            {
+                "titulo": "AB",
+                "prioridade": "ALTA"
+            }
+            """;
+
+        mockMvc.perform(post("/tarefas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(tarefaService);
+    }
+
+    @Test
+    void deveRetornar400QuandoTituloUltrapassarLimite() throws Exception {
+
+        String titulo = "A".repeat(101);
+
+        String json = """
+        {
+            "titulo": "%s",
+            "prioridade": "ALTA"
+        }
+        """.formatted(titulo);
+
+        mockMvc.perform(post("/tarefas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(tarefaService);
+
+    }
+
 
 }
