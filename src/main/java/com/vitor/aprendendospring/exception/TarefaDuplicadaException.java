@@ -1,4 +1,4 @@
-package com.vitor.aprendendospring.exeption;
+package com.vitor.aprendendospring.exception;
 
 public class TarefaDuplicadaException extends RuntimeException {
 

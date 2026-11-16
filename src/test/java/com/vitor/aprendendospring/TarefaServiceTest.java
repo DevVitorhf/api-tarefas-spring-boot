@@ -2,8 +2,8 @@ package com.vitor.aprendendospring;
 
 
 import com.vitor.aprendendospring.dto.TarefaResponse;
-import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
-import com.vitor.aprendendospring.exeption.TarefaNaoEncontradaException;
+import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
+import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.repository.TarefaRepository;
 import com.vitor.aprendendospring.service.TarefaService;

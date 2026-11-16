@@ -1,9 +1,9 @@
 package com.vitor.aprendendospring.handler;
 
 
-import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
-import com.vitor.aprendendospring.exeption.TarefaNaoEncontradaException;
-import com.vitor.aprendendospring.response.ErroResponse;
+import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
+import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
+import com.vitor.aprendendospring.dto.ErroResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

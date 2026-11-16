@@ -1,4 +1,4 @@
-package com.vitor.aprendendospring.response;
+package com.vitor.aprendendospring.dto;
 
 public record ErroResponse(int codigo, String mansage) {
 }

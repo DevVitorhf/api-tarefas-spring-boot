@@ -4,7 +4,7 @@ package com.vitor.aprendendospring;
 
 import com.vitor.aprendendospring.controller.TarefaController;
 import com.vitor.aprendendospring.dto.TarefaResponse;
-import com.vitor.aprendendospring.exeption.TarefaDuplicadaException;
+import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
 import com.vitor.aprendendospring.handler.GlobalExceptionHandler;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
