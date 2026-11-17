@@ -6,6 +6,7 @@ import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
 import com.vitor.aprendendospring.dto.ErroResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +56,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(resposta);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErroResponse> tratarJsonInvalido(
+            HttpMessageNotReadableException ex) {
+
+        ErroResponse resposta = new ErroResponse(
+                400,
+                "Não foi possível interpretar os dados enviados."
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(resposta);
     }
 

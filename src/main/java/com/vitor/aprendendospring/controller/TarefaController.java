@@ -2,6 +2,7 @@ package com.vitor.aprendendospring.controller;
 
 import com.vitor.aprendendospring.dto.TarefaRequest;
 import com.vitor.aprendendospring.dto.TarefaResponse;
+import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
 import jakarta.validation.Valid;
@@ -32,10 +33,10 @@ public class TarefaController {
         Tarefa salva = tarefaService.cadastrar(tarefa);
 
         TarefaResponse response = new TarefaResponse(
-                tarefa.getId(),
-                tarefa.getTitulo(),
-                tarefa.getPrioridade(),
-                tarefa.isConcluida()
+                salva.getId(),
+                salva.getTitulo(),
+                salva.getPrioridade(),
+                salva.isConcluida()
         );
 
         return ResponseEntity
@@ -78,7 +79,7 @@ public class TarefaController {
 
     @GetMapping("/prioridade/{prioridade}")
     public ResponseEntity<List<TarefaResponse>> buscarPorPrioridade(
-            @PathVariable String prioridade) {
+            @PathVariable Prioridade prioridade) {
 
         List<TarefaResponse> tarefas = tarefaService.buscarPorPrioridade(prioridade);
 
