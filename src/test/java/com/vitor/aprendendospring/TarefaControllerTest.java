@@ -18,6 +18,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+
 @ExtendWith(MockitoExtension.class)
 class TarefaControllerTest {
 
@@ -42,12 +48,14 @@ class TarefaControllerTest {
     private TarefaController tarefaController;
 
     private MockMvc mockMvc;
-
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(tarefaController)
                 .setControllerAdvice(new GlobalExceptionHandler())
+                .setCustomArgumentResolvers(
+                        new PageableHandlerMethodArgumentResolver()
+                )
                 .build();
     }
 
@@ -231,5 +239,32 @@ class TarefaControllerTest {
 
     }
 
+    @Test
+    void deveListarTarefasComPaginacao() throws Exception {
+
+        Pageable pageable = PageRequest.of(1, 5);
+
+        Page<TarefaResponse> pagina = new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        );
+
+        when(tarefaService.listarTodas(any(Pageable.class)))
+                .thenReturn(pagina);
+
+        mockMvc.perform(get("/tarefas")
+                        .param("page", "1")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+
+        verify(tarefaService).listarTodas(
+                argThat(p ->
+                        p.getPageNumber() == 1 &&
+                                p.getPageSize() == 5
+                )
+        );
+    }
 
 }
