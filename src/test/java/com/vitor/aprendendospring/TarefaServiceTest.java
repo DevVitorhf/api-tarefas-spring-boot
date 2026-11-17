@@ -4,6 +4,7 @@ package com.vitor.aprendendospring;
 import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
 import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
+import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.repository.TarefaRepository;
 import com.vitor.aprendendospring.service.TarefaService;
@@ -121,18 +122,18 @@ class TarefaServiceTest {
 
         tarefa.setId(1L);
         tarefa.setTitulo("Estudar Java");
-        tarefa.setPrioridade("ALTA");
+        tarefa.setPrioridade(Prioridade.ALTA);
         tarefa.setConcluida(false);
 
-        when(tarefaRepository.findByPrioridade("ALTA")).thenReturn(List.of(tarefa));
+        when(tarefaRepository.findByPrioridade(Prioridade.ALTA)).thenReturn(List.of(tarefa));
 
-        List<TarefaResponse> resultado = tarefaService.buscarPorPrioridade("ALTA");
+        List<TarefaResponse> resultado = tarefaService.buscarPorPrioridade(Prioridade.ALTA);
 
         assertEquals(1, resultado.size());
         assertEquals("Estudar Java", resultado.get(0).titulo());
-        assertEquals("ALTA", resultado.get(0).prioridade());
+        assertEquals(Prioridade.ALTA, resultado.get(0).prioridade());
 
-        verify(tarefaRepository).findByPrioridade("ALTA");
+        verify(tarefaRepository).findByPrioridade(Prioridade.ALTA);
 
 
     }

@@ -1,5 +1,6 @@
 package com.vitor.aprendendospring.repository;
 
+import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +11,5 @@ public interface TarefaRepository
 
     boolean existsByTitulo(String titulo);
 
-    List<Tarefa> findByPrioridade(String prioridade);
+    List<Tarefa> findByPrioridade(Prioridade prioridade);
 }

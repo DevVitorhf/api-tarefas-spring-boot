@@ -6,6 +6,7 @@ import com.vitor.aprendendospring.controller.TarefaController;
 import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
 import com.vitor.aprendendospring.handler.GlobalExceptionHandler;
+import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
 
@@ -57,7 +58,7 @@ class TarefaControllerTest {
         TarefaResponse response = new TarefaResponse(
                 1L,
                 "Estudar Spring Boot",
-                "ALTA",
+                Prioridade.ALTA,
                 false
         );
 
@@ -135,11 +136,11 @@ class TarefaControllerTest {
 
         TarefaResponse tarefaResponse = new TarefaResponse(1L,
                 "Estudar Java",
-                "ALTA",
+                Prioridade.ALTA,
                 false
         );
 
-        when(tarefaService.buscarPorPrioridade("ALTA"))
+        when(tarefaService.buscarPorPrioridade(Prioridade.ALTA))
                 .thenReturn(List.of(tarefaResponse));
 
         mockMvc.perform(get("/tarefas/prioridade/ALTA"))
@@ -179,6 +180,47 @@ class TarefaControllerTest {
             "prioridade": "ALTA"
         }
         """.formatted(titulo);
+
+        mockMvc.perform(post("/tarefas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(tarefaService);
+
+    }
+
+
+    @Test
+    void deveRetornar400QuandoPrioridadeForInvalida() throws Exception {
+
+        String json = """
+        {
+            "titulo": "Estudar Java",
+            "prioridade": "BANANA"
+        }
+        """;
+
+        mockMvc.perform(post("/tarefas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.mensagem")
+                        .value("Não foi possível interpretar os dados enviados."));;
+
+        verifyNoInteractions(tarefaService);
+    }
+
+    @Test
+    void deveRetornar400QuandoPrioridadeForNula() throws Exception {
+
+        String json = """
+        {
+            "titulo": "Estudar Java",
+            "prioridade": null
+        }
+        """;
 
         mockMvc.perform(post("/tarefas")
                 .contentType(MediaType.APPLICATION_JSON)

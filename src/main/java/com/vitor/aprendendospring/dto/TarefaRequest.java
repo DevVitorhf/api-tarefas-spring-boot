@@ -1,6 +1,8 @@
 package com.vitor.aprendendospring.dto;
 
+import com.vitor.aprendendospring.model.Prioridade;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record TarefaRequest(
@@ -13,7 +15,7 @@ public record TarefaRequest(
         )
         String titulo,
 
-        @NotBlank(message = "A prioridade é obrigatória")
-        String prioridade
+        @NotNull(message = "A prioridade é obrigatória")
+        Prioridade prioridade
 
 ) {}

@@ -1,9 +1,11 @@
 package com.vitor.aprendendospring.dto;
 
+import com.vitor.aprendendospring.model.Prioridade;
+
 public record TarefaResponse(
         Long id,
         String titulo,
-        String prioridade,
+        Prioridade prioridade,
         boolean concluida
 ) {
 }

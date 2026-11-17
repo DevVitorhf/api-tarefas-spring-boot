@@ -4,6 +4,7 @@ import com.vitor.aprendendospring.dto.TarefaRequest;
 import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
 import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
+import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.repository.TarefaRepository;
 import jakarta.transaction.Transactional;
@@ -89,7 +90,7 @@ public class TarefaService {
         tarefaRepository.delete(tarefa);
     }
 
-    public List<TarefaResponse> buscarPorPrioridade(String prioridade) {
+    public List<TarefaResponse> buscarPorPrioridade(Prioridade prioridade) {
 
         List<Tarefa> tarefas = tarefaRepository.findByPrioridade(prioridade);
 

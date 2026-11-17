@@ -21,7 +21,8 @@ public class Tarefa {
 
     private boolean concluida;
 
-    private String prioridade;
+    @Enumerated(EnumType.STRING)
+    private Prioridade prioridade;
 
 }
 
