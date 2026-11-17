@@ -9,6 +9,8 @@ import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.repository.TarefaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,17 +32,16 @@ public class TarefaService {
     }
 
 
-    public List<TarefaResponse> listarTodas() {
+    public Page<TarefaResponse> listarTodas(Pageable pageable) {
 
-        return tarefaRepository.findAll()
-                .stream()
-                .map(tarefa -> new TarefaResponse(
-                        tarefa.getId(),
-                        tarefa.getTitulo(),
-                        tarefa.getPrioridade(),
-                        tarefa.isConcluida()
-                ))
-                .toList();
+        Page<Tarefa> pagina = tarefaRepository.findAll(pageable);
+
+        return pagina.map(tarefa -> new TarefaResponse(
+                tarefa.getId(),
+                tarefa.getTitulo(),
+                tarefa.getPrioridade(),
+                tarefa.isConcluida()
+        ));
     }
 
     public TarefaResponse buscarPorId(Long id) {

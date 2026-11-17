@@ -7,9 +7,12 @@ import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -47,10 +50,12 @@ public class TarefaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TarefaResponse>> listarTodas() {
-        List<TarefaResponse> tarefas = tarefaService.listarTodas();
+    public ResponseEntity<Page<TarefaResponse>> listarTodas(
+            Pageable pageable) {
 
-        return ResponseEntity.ok(tarefas);
+        Page<TarefaResponse> pagina = tarefaService.listarTodas(pageable);
+
+        return ResponseEntity.ok(pagina);
     }
 
     @GetMapping("/{id}")

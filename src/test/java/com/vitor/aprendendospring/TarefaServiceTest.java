@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
@@ -136,6 +140,48 @@ class TarefaServiceTest {
         verify(tarefaRepository).findByPrioridade(Prioridade.ALTA);
 
 
+    }
+
+    @Test
+    void deveListarTarefasPaginadas() {
+
+        Tarefa tarefa = new Tarefa();
+        tarefa.setId(1L);
+        tarefa.setTitulo("Estudar Spring Boot");
+        tarefa.setPrioridade(Prioridade.ALTA);
+        tarefa.setConcluida(false);
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        Page<Tarefa> pagina = new PageImpl<>(
+                List.of(tarefa),
+                pageable,
+                1
+        );
+
+        when(tarefaRepository.findAll(pageable))
+                .thenReturn(pagina);
+
+        Page<TarefaResponse> resultado =
+                tarefaService.listarTodas(pageable);
+
+        assertEquals(1, resultado.getTotalElements());
+
+        assertEquals(1, resultado.getContent().size());
+
+        assertEquals("Estudar Spring Boot",
+                resultado.getContent().get(0).titulo());
+
+        assertEquals(Prioridade.ALTA,
+                resultado.getContent().get(0).prioridade());
+
+        assertEquals(0, resultado.getNumber());
+
+        assertEquals(5, resultado.getSize());
+
+        assertEquals(1, resultado.getTotalPages());
+
+        verify(tarefaRepository).findAll(pageable);
     }
 
 }
