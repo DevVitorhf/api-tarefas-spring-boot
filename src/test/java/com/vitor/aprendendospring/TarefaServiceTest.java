@@ -163,7 +163,7 @@ class TarefaServiceTest {
                 .thenReturn(pagina);
 
         Page<TarefaResponse> resultado =
-                tarefaService.listarTodas(pageable);
+                tarefaService.listarTodas(null,pageable);
 
         assertEquals(1, resultado.getTotalElements());
 
@@ -183,6 +183,64 @@ class TarefaServiceTest {
 
         verify(tarefaRepository).findAll(pageable);
     }
+
+    @Test
+    void deveListarTodasQuandoPrioridadeForNula() {
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        Page<Tarefa> pagina = new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        );
+
+        when(tarefaRepository.findAll(pageable))
+                .thenReturn(pagina);
+
+        Page<TarefaResponse> resultado =
+                tarefaService.listarTodas(null, pageable);
+
+        verify(tarefaRepository).findAll(pageable);
+
+        verifyNoMoreInteractions(tarefaRepository);
+
+        assertTrue(resultado.isEmpty());
+
+    }
+
+    @Test
+    void deveFiltrarPorPrioridadeAlta() {
+
+        Tarefa tarefa = new Tarefa();
+        tarefa.setTitulo("Aprendendo tests");
+        tarefa.setPrioridade(Prioridade.ALTA);
+        tarefa.setConcluida(true);
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        Page<Tarefa> pagina = new PageImpl<>(
+                List.of(tarefa),
+                pageable,
+                1
+        );
+
+        when(tarefaRepository.findByPrioridade(Prioridade.ALTA, pageable))
+                .thenReturn(pagina);
+
+        Page<TarefaResponse> resultado =
+                tarefaService.listarTodas(Prioridade.ALTA, pageable);
+
+        assertEquals(Prioridade.ALTA,
+                resultado.getContent().get(0).prioridade());
+
+        verify(tarefaRepository)
+                .findByPrioridade(Prioridade.ALTA, pageable);
+
+        verify(tarefaRepository, never())
+                .findAll(pageable);
+    }
+
 
 }
 

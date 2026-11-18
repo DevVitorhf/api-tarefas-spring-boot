@@ -32,9 +32,19 @@ public class TarefaService {
     }
 
 
-    public Page<TarefaResponse> listarTodas(Pageable pageable) {
+    public Page<TarefaResponse> listarTodas(
+            Prioridade prioridade,
+            Pageable pageable
+    ) {
+        Page<Tarefa> pagina;
 
-        Page<Tarefa> pagina = tarefaRepository.findAll(pageable);
+        if (prioridade == null) {
+            pagina = tarefaRepository.findAll(pageable);
+        } else {
+            pagina = tarefaRepository.findByPrioridade(
+                    prioridade, pageable
+            );
+        }
 
         return pagina.map(tarefa -> new TarefaResponse(
                 tarefa.getId(),
