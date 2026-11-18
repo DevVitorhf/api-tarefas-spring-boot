@@ -2,6 +2,8 @@ package com.vitor.aprendendospring.repository;
 
 import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,4 +14,9 @@ public interface TarefaRepository
     boolean existsByTitulo(String titulo);
 
     List<Tarefa> findByPrioridade(Prioridade prioridade);
+
+    Page<Tarefa> findByPrioridade(
+            Prioridade prioridade,
+            Pageable pageable
+    );
 }

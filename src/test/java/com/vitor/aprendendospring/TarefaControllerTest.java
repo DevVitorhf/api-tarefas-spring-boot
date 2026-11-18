@@ -18,10 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -200,7 +197,7 @@ class TarefaControllerTest {
 
 
     @Test
-    void deveRetornar400QuandoPrioridadeForInvalida() throws Exception {
+    void deveRetornar400QuandoPrioridadeDoJsonForInvalida() throws Exception {
 
         String json = """
         {
@@ -215,7 +212,7 @@ class TarefaControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.mensagem")
-                        .value("Não foi possível interpretar os dados enviados."));;
+                        .value("Não foi possível interpretar os dados enviados."));
 
         verifyNoInteractions(tarefaService);
     }
@@ -250,7 +247,7 @@ class TarefaControllerTest {
                 0
         );
 
-        when(tarefaService.listarTodas(any(Pageable.class)))
+        when(tarefaService.listarTodas(null,pageable))
                 .thenReturn(pagina);
 
         mockMvc.perform(get("/tarefas")
@@ -260,11 +257,127 @@ class TarefaControllerTest {
                 .andExpect(jsonPath("$.content").isArray());
 
         verify(tarefaService).listarTodas(
+                isNull(),
                 argThat(p ->
                         p.getPageNumber() == 1 &&
                                 p.getPageSize() == 5
                 )
         );
+    }
+
+    @Test
+    void deveReceberOrdenacaoPorTituloDecrescente() throws Exception {
+
+        Pageable pageable = PageRequest.of(
+                0,
+                10,
+                Sort.by(Sort.Direction.DESC, "titulo")
+        );
+
+        Page<TarefaResponse> pagina = new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        );
+
+        when(tarefaService.listarTodas(null,pageable))
+                .thenReturn(pagina);
+
+        mockMvc.perform(get("/tarefas")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "titulo,desc"))
+                .andExpect(status().isOk());
+
+        verify(tarefaService).listarTodas(
+                isNull(),
+                argThat(p ->
+                        p.getPageNumber() == 0 &&
+                                p.getPageSize() == 10 &&
+                                p.getSort().getOrderFor("titulo") != null &&
+                                p.getSort().getOrderFor("titulo").getDirection()
+                                        == Sort.Direction.DESC
+                )
+        );
+    }
+
+    @Test
+    void deveFiltrarTarefasPorPrioridadeAlta() throws Exception {
+
+        Pageable pageable = PageRequest.of(
+                0,
+                5,
+                Sort.by("titulo").ascending()
+        );
+
+        Page<TarefaResponse> pagina = new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        );
+
+        when(tarefaService.listarTodas(
+                eq(Prioridade.ALTA),
+                any(Pageable.class)
+        )).thenReturn(pagina);
+
+        mockMvc.perform(get("/tarefas")
+                        .param("prioridade", "ALTA")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("sort", "titulo,asc"))
+                .andExpect(status().isOk());
+
+        verify(tarefaService).listarTodas(
+                eq(Prioridade.ALTA),
+                argThat(p ->
+                        p.getPageNumber() == 0
+                                && p.getPageSize() == 5
+                                && p.getSort().getOrderFor("titulo") != null
+                                && p.getSort().getOrderFor("titulo")
+                                .getDirection() == Sort.Direction.ASC
+                )
+        );
+    }
+
+    @Test
+    void deveListarTarefasQuandoPrioridadeNaoForInformada() throws Exception {
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        Page<TarefaResponse> pagina = new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        );
+
+        when(tarefaService.listarTodas(
+                isNull(),
+                any(Pageable.class)
+        )).thenReturn(pagina);
+
+        mockMvc.perform(get("/tarefas")
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isOk());
+        verify(tarefaService).listarTodas(
+                isNull(),
+                argThat(p ->
+                        p.getPageNumber() == 0 &&
+                                p.getPageSize() == 5
+                )
+        );
+
+    }
+
+    @Test
+    void novoDeveRetornar400QuandoPrioridadeForInvalidaN() throws Exception {
+
+        mockMvc.perform(get("/tarefas")
+                        .param("prioridade", "URGENTE"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(tarefaService);
     }
 
 }

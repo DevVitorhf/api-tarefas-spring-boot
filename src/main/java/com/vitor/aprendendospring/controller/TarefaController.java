@@ -51,9 +51,12 @@ public class TarefaController {
 
     @GetMapping
     public ResponseEntity<Page<TarefaResponse>> listarTodas(
-            Pageable pageable) {
+            @RequestParam(required = false) Prioridade prioridade,
+            Pageable pageable
+    ) {
 
-        Page<TarefaResponse> pagina = tarefaService.listarTodas(pageable);
+        Page<TarefaResponse> pagina =
+                tarefaService.listarTodas(prioridade,pageable);
 
         return ResponseEntity.ok(pagina);
     }
