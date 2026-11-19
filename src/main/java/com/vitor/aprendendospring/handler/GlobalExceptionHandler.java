@@ -1,6 +1,7 @@
 package com.vitor.aprendendospring.handler;
 
 
+import com.vitor.aprendendospring.exception.PaginacaoInvalidaException;
 import com.vitor.aprendendospring.exception.TarefaDuplicadaException;
 import com.vitor.aprendendospring.exception.TarefaNaoEncontradaException;
 import com.vitor.aprendendospring.dto.ErroResponse;
@@ -71,6 +72,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(resposta);
+    }
+
+    @ExceptionHandler(PaginacaoInvalidaException.class)
+    public ResponseEntity<ErroResponse> tratarPaginacaoInvalida(
+            PaginacaoInvalidaException ex) {
+
+        ErroResponse erro = new ErroResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.badRequest().body(erro);
     }
 
 }
