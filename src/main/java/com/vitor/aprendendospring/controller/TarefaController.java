@@ -5,6 +5,7 @@ import com.vitor.aprendendospring.dto.TarefaResponse;
 import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
+import com.vitor.aprendendospring.validation.PaginacaoValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,8 @@ import java.util.List;
 public class TarefaController {
 
     private final TarefaService tarefaService;
+
+    private final PaginacaoValidator paginacaoValidator;
 
 
     @PostMapping
@@ -52,11 +55,15 @@ public class TarefaController {
     @GetMapping
     public ResponseEntity<Page<TarefaResponse>> listarTodas(
             @RequestParam(required = false) Prioridade prioridade,
-            Pageable pageable
-    ) {
+            @RequestParam(name = "page", required = false) String paginaOriginal,
+            @RequestParam(name = "size", required = false) String tamanhoOriginal,
+            Pageable pageable) {
+
+        paginacaoValidator.validarPagina(paginaOriginal);
+        paginacaoValidator.validarTamanho(tamanhoOriginal);
 
         Page<TarefaResponse> pagina =
-                tarefaService.listarTodas(prioridade,pageable);
+                tarefaService.listarTodas(prioridade, pageable);
 
         return ResponseEntity.ok(pagina);
     }

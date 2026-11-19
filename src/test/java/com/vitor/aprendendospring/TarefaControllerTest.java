@@ -10,6 +10,7 @@ import com.vitor.aprendendospring.model.Prioridade;
 import com.vitor.aprendendospring.model.Tarefa;
 import com.vitor.aprendendospring.service.TarefaService;
 
+import com.vitor.aprendendospring.validation.PaginacaoValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +41,9 @@ class TarefaControllerTest {
 
     @Mock
     private TarefaService tarefaService;
+
+    @Mock
+    private PaginacaoValidator paginacaoValidator;
 
     @InjectMocks
     private TarefaController tarefaController;
