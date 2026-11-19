@@ -37,7 +37,32 @@ class PaginacaoConfigTest {
                         .param("page", "0")
                         .param("size", "200"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size").value(50));
+                .andExpect(jsonPath("$.size").value(50)
+                );
+    }
+
+    @Test
+    @WithMockUser
+    void deveTratarNumeroDePaginaNegativo() throws Exception {
+        mockMvc.perform(get("/tarefas")
+                .param("page","-1")
+                .param("size","10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.number").value(0)
+                );
+    }
+
+    @Test
+    @WithMockUser
+    void deveTratarTamanhoDePaginaNegativo() throws Exception {
+
+        mockMvc.perform(get("/tarefas")
+                .param("page", "0")
+                .param("size", "-5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size").value(10)
+                );
+
     }
 
 }
