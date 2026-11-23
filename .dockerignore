@@ -1,7 +1,6 @@
-
 .git
 .github
 .idea
 *.iml
-target/*
-!target/v2aprendendospring-0.0.1-SNAPSHOT.jar
+target/
+.env
