@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,13 +91,15 @@ public class TarefaService {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void excluir(Long id) {
 
         Tarefa tarefa = tarefaRepository.findById(id)
                 .orElseThrow(() -> new TarefaNaoEncontradaException(
-                        "Tarefa não encontrada: " + id
-                ));
+                                "Tarefa não encontrada: " + id
+                        )
+                );
 
         tarefaRepository.delete(tarefa);
     }

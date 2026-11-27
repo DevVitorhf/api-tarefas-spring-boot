@@ -19,3 +19,9 @@ spring:
       pageable:
         default-page-size: 10
         max-page-size: 50
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: api-tarefas
+    expiration: 3600

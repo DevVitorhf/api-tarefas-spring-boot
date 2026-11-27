@@ -8,9 +8,12 @@ import com.vitor.aprendendospring.dto.ErroResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.vitor.aprendendospring.exception.UsuarioDuplicadoException;
+
 
 import java.util.stream.Collectors;
 
@@ -86,4 +89,44 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(erro);
     }
 
+    @ExceptionHandler(UsuarioDuplicadoException.class)
+    public ResponseEntity<ErroResponse> tratarUsuarioDuplicado( UsuarioDuplicadoException ex){
+
+        ErroResponse erro = new ErroResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(erro);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroResponse> tratarIllegalArgumentException(
+            IllegalArgumentException ex){
+
+        ErroResponse erro = new ErroResponse(
+                400,
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(erro);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErroResponse> tratarCredenciaisInvalidas(
+            BadCredentialsException ex
+    ) {
+
+        ErroResponse erro = new ErroResponse(
+                401,
+                "E-mail ou senha inválidos."
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(erro);
+    }
 }
